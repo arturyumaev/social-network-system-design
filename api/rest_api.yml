@@ -1,0 +1,413 @@
+openapi: 3.0.3
+info:
+  title: Swagger Social Network - OpenAPI 3.0
+  description: System Design course 2023
+  contact:
+    email: art.yumaev@gmail.com
+  version: 1.0.0
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: users
+    description: Operations about user
+  - name: chats
+    description: Show user's chats
+  - name: media
+    description: Upload media for posts
+  - name: feeds
+    description: Operations about feed
+paths:
+  # Users
+  /users/{user_id}/profile:
+    get:
+      tags:
+        - users
+      summary: Get user's profile
+      description: ''
+      operationId: users_user_id_profile_get
+      parameters:
+        - name: user_id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+  /users/{user_id}/friends:
+    get:
+      tags:
+        - users
+      summary: Show user's friends
+      description: ''
+      operationId: users_user_id_friends_get
+      parameters:
+        - name: user_id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+  /users/{user_id}/friends/{user_id}:
+    post:
+      tags:
+        - users
+      summary: Send friend request
+      description: ''
+      operationId: users_user_id_friends_post
+      parameters:
+        - name: user_id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    delete:
+      tags:
+        - users
+      summary: Delete user from friends
+      description: ''
+      operationId: users_user_id_friends_delete
+      parameters:
+        - name: user_id
+          in: path
+          description: 'User ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  # Media
+  /media/images:
+    post:
+      tags:
+        - media
+      summary: Upload post image
+      description: ''
+      operationId: media_images
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                filename:
+                  type: string
+                body:
+                  type: string
+                ordering_number:
+                  type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PostImage'
+  # Feed
+  /feeds/{feed_id}/posts:
+    get:
+      tags:
+        - feeds
+      summary: Get post in feed
+      description: ''
+      operationId: feeds_feed_id_posts_get
+      parameters:
+        - name: feed_id
+          in: path
+          description: 'Feed ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feed:
+                    $ref: '#/components/schemas/Feed'
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+    post:
+      tags:
+        - feeds
+      summary: Create new post in feed
+      description: ''
+      operationId: feeds_feed_id_posts_post
+      parameters:
+        - name: feed_id
+          in: path
+          description: 'Feed ID'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                images_ids:
+                  type: array
+                  items:
+                    type: string
+                restriction:
+                  type: string
+                  default: PUBLIC
+                  enum:
+                    - FRIENDS_ONLY
+                    - PUBLIC
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feed:
+                    $ref: '#/components/schemas/Feed'
+                  post:
+                    $ref: '#/components/schemas/Post'
+  /feeds/{feed_id}/posts/{post_id}:
+    get:
+      tags:
+        - feeds
+      summary: Get post in feed
+      description: ''
+      operationId: feeds_feed_id_posts_post_id_get
+      parameters:
+        - name: feed_id
+          in: path
+          description: 'Feed ID'
+          required: true
+          schema:
+            type: string
+        - name: post_id
+          in: path
+          description: 'Post ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  feed:
+                    $ref: '#/components/schemas/Feed'
+                  post:
+                    $ref: '#/components/schemas/Post'
+  # Chats
+  /chats:
+    get:
+      tags:
+        - chats
+      summary: Get chats previews
+      description: ''
+      operationId: chats_get
+      parameters:
+        - name: user_name
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Chat'
+  /chats/{chat_id}:
+    get:
+      tags:
+        - chats
+      summary: Get chat by chat_id
+      description: ''
+      operationId: chats_chat_id_get
+      parameters:
+        - name: chat_id
+          in: path
+          description: 'Chat ID'
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Chat'
+  /chats/{chat_id}/messages:
+    post:
+      tags:
+        - chats
+      summary: Send a new message in a chat
+      description: ''
+      operationId: chatss_chat_id_messages_post
+      parameters:
+        - name: chat_id
+          in: path
+          description: 'Chat ID'
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Request body
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - text
+              properties:
+                text:
+                  type: string
+      responses:
+        200:
+          description: OK
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        avatar_url:
+          type: string
+        friend_status:
+          type: string
+          default: NOT_FRIEND
+          enum:
+            - NOT_FRIEND
+            - FRIEND
+            - PENDING
+    Message:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        text:
+          type: string
+        is_read:
+          type: boolean
+    Chat:
+      type: object
+      properties:
+        updated_at:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+    Feed:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+        feed_id:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+        deleted_at:
+          type: string
+          format: date-time
+        text:
+          type: string
+        author:
+          $ref: '#/components/schemas/User'
+        likes_count:
+          type: integer
+        reposts_count:
+          type: integer
+        comments_count:
+          type: integer
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/PostImage'
+    PostImage:
+      type: object
+      properties:
+        id:
+          type: string
+        small_url:
+          type: string
+        medium_url:
+          type: string
+        large_url:
+          type: string
+        ordering_number:
+          type: integer
